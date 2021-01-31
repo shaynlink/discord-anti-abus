@@ -1,0 +1,29 @@
+{
+  "name": "discord-anti-abus",
+  "version": "1.0.0",
+  "description": "Anti-Abus JS plugin for discord",
+  "main": "src/index.js",
+  "types": "./typings/index.d.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shaynlink/anti-abus.djs.git"
+  },
+  "keywords": [
+    "anti-abus",
+    "discord.js",
+    "anti-abus-discord"
+  ],
+  "author": "Shaynlink",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shaynlink/anti-abus.djs/issues"
+  },
+  "homepage": "https://github.com/Shaynlink/anti-abus.djs#readme",
+  "devDependencies": {
+    "discord.js": "^12.5.1",
+    "eris": "^0.14.0"
+  }
+}
