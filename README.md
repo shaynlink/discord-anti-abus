@@ -73,12 +73,12 @@ yarn add discord-anti-abus
 ```js
 new BaseClient(/* Discord Client */, /* Anti-Abus Options */);
 ```
-#### - `BaseClient#options` -> `ClientOptions`
+- `BaseClient#options` -> `ClientOptions`
 ## function client `Extends Core<CorePlugin<BaseClient>>`
 ```js
 const Client = client(/* CorePlugins */);
 ```
-#### - `client` -> `Client`
+- `client` -> `Client`
 ## class Client
 ```js
 const client = new Client(/* Discord Client */, /* Anti-Abus Options */);
@@ -87,16 +87,16 @@ const client = new Client(/* Discord Client */, /* Anti-Abus Options */);
 ```js
 const Core = core(/* CorePlugin<BaseClient> */);
 ```
-#### - `core` -> `Core`
+- `core` -> `Core`
 ## class Core `Extends CorePlugin<BaseClient>`
 ```js
 const core = new Core(/* Discord CLient */, /* Anti-Abus Options */);
 ```
-#### - `Core#spams` -> `Map<Snowflake, {lastTimestamp: number, count: number}>`
-#### - `Core#checkExec(<Parsing>)` -> `boolean`
-#### - `Core#__messageHandle(<Message>, <Callback>)` -> `Core`
-#### - `Core#messageHandle(<...args>)` -> `Core | any`
-#### - `Core#triggerAntiSpam(<Snowflake>, <Parsing>)` -> `{lastTimestamp: number, count: number, message: Parsing}`
+- `Core#spams` -> `Map<Snowflake, {lastTimestamp: number, count: number}>`
+- `Core#checkExec(<Parsing>)` -> `boolean`
+- `Core#__messageHandle(<Message>, <Callback>)` -> `Core`
+- `Core#messageHandle(<...args>)` -> `Core | any`
+- `Core#triggerAntiSpam(<Snowflake>, <Parsing>)` -> `{lastTimestamp: number, count: number, message: Parsing}`
 ## function plugin
 ```js
 // discord.js
@@ -104,15 +104,15 @@ const Plugin = discordjs(/* BaseClient */); // Plugin
 // Eris
 const Plugin = eris(/* BaseClient */); // Plugin
 ```
-#### - `plugin` -> `Plugin`
+- `plugin` -> `Plugin`
 ## class Plugin `Extends BaseClient`
 ```js
 const plugin = new Plugin(/* Discord Client */, /* Anti-Abus Options */);
 ```
-#### - `Plugin#clientUser` -> `{id: Snowflake}`
-#### - `Plugin#parseClient<DiscordClient>` -> `void`
-#### - `Plugin#parseMessage<DiscordMessage>` -> `{content: string, author: {id: Snowflake}, channel: {id: Snowflake}, guild: {id: snowflake} | null, isGuild: boolean}`
-#### - `static Plugin#isBase` -> `true`
+- `Plugin#clientUser` -> `{id: Snowflake}`
+- `Plugin#parseClient<DiscordClient>` -> `void`
+- `Plugin#parseMessage<DiscordMessage>` -> `{content: string, author: {id: Snowflake}, channel: {id: Snowflake}, guild: {id: snowflake} | null, isGuild: boolean}`
+- `static Plugin#isBase` -> `true`
 
 # Example
 ## With Discord.js
