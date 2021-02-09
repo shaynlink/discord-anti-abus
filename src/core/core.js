@@ -19,21 +19,25 @@ const core = Base => class extends Base {
         this.parseClient(client);
     };
 
-    checkExec(parsing) {
+    checkExec(parsing, type, cbExept) {
         let exec = true;
-        if (this.options.exceptionMembers) {
-            let customException = this.options.exceptionMembers.find((em) => typeof em == 'object' && em[0] == parsing.author.id);
-            if (customException && customException[1] && !customException[1].antispam) exec = false;
-        };
 
-        if (this.options.exceptionGuilds && parsing.isGuild) {
-            let customException = this.options.exceptionGuilds.find((em) => typeof em == 'object' && em[0] == parsing.guild.id);
-            if (customException && customException[1] && !customException[1].antispam) exec = false;
-        };
-
-        if (this.options.exceptionChannels && parsing.isGuild) {
-            let customException = this.options.exceptionChannels.find((em) => typeof em == 'object' && em[0] == parsing.channel.id);
-            if (customException && customException[1] && !customException[1].antispam) exec = false;
+        if (cbExept && typeof cbExept == 'object') return !!cbExept[type]
+        else {
+            if (this.options.exceptionMembers) {
+                let customException = this.options.exceptionMembers.find((em) => typeof em == 'object' && em[0] == parsing.author.id);
+                if (customException && customException[1] && !customException[1][type]) exec = false;
+            };
+    
+            if (this.options.exceptionGuilds && parsing.isGuild) {
+                let customException = this.options.exceptionGuilds.find((em) => typeof em == 'object' && em[0] == parsing.guild.id);
+                if (customException && customException[1] && !customException[1][type]) exec = false;
+            };
+    
+            if (this.options.exceptionChannels && parsing.isGuild) {
+                let customException = this.options.exceptionChannels.find((em) => typeof em == 'object' && em[0] == parsing.channel.id);
+                if (customException && customException[1] && !customException[1][type]) exec = false;
+            };
         };
 
         return exec;
@@ -47,21 +51,37 @@ const core = Base => class extends Base {
         if (!this.options.enableDM && !parsing.isGuild) return;
         
         const abus = {};
+        let cbExept;
 
-        if (!!this.options.exceptionMembers) {
-            if (this.options.exceptionMembers.includes(parsing.author.id)) return callback(this.options.onMessage.call(this, message, abus));
+        const pass = {
+            antispam: true,
         };
 
-        if (!!this.options.exceptionGuilds && parsing.isGuild) {
-            if (this.options.exceptionGuilds.includes(parsing.guild.id)) return callback(this.options.onMessage.call(this, message, abus));
+        if (!!this.options.exception && typeof this.options.exception == 'function') {
+            let cb = await this.options.exception.call(this, 'messageCreate', message);
+            if (!!cb) {
+                if (typeof cb == 'object') {
+                    Object.keys(cb).forEach((k) => {
+                        pass[k] = !cb[k];
+                    });
+                } else return callback(this.options.onMessage.call(this, message, abus));
+            } else if (typeof cbExept == 'object') cbExept = cb;
+        } else {            
+            if (!!this.options.exceptionMembers) {
+                if (this.options.exceptionMembers.includes(parsing.author.id)) return callback(this.options.onMessage.call(this, message, abus));
+            };
+    
+            if (!!this.options.exceptionGuilds && parsing.isGuild) {
+                if (this.options.exceptionGuilds.includes(parsing.guild.id)) return callback(this.options.onMessage.call(this, message, abus));
+            };
+    
+            if (!!this.options.exceptionChannels && parsing.isGuild) {
+                if (this.options.exceptionChannels.includes(parsing.channel.id)) return callback(this.options.onMessage.call(this, message, abus));
+            };
         };
 
-        if (!!this.options.exceptionChannels && parsing.isGuild) {
-            if (this.options.exceptionChannels.includes(parsing.channel.id)) return callback(this.options.onMessage.call(this, message, abus));
-        };
-
-        if (!!this.options.antispam && (parsing.isGuild ? true : typeof this.enableDM == 'object' ? this.enableDM.antispam : true)) {
-            let exec = this.checkExec(parsing);
+        if (!!this.options.antispam && pass.antispam && (parsing.isGuild ? true : typeof this.enableDM == 'object' ? this.enableDM.antispam : true)) {
+            let exec = this.checkExec(parsing, 'antispam', cbExept);
 
             if (exec) {
                 let tas, mounted = false;
@@ -88,9 +108,9 @@ const core = Base => class extends Base {
         
         if (Object.keys(abus).length > 0) {
             this.emit('textAbus', message, abus);
-            callback(this.options.blockCallback ? null : this.options.onMessage.call(this, message, abus), Object.keys(abus).length > 0 ? abus : null);
+            callback(this.options.blockCallback ? null : this.options.onMessage.call(this, message, abus), abus);
         } else {
-            callback(this.options.onMessage.call(this, message, abus), Object.keys(abus).length > 0 ? abus : null);
+            callback(this.options.onMessage.call(this, message, abus));
         };
 
         return this;

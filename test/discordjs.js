@@ -6,6 +6,8 @@ const client = new discord.Client();
 const discordAntiAbus = require('../src');
 const AntiAbus = discordAntiAbus.client(discordAntiAbus.discordjs);
 
+let wait = 0;
+
 const antiabus = new AntiAbus(client, {
     // messageHandler: function (message, callback) {}, // Message handler code
     antispam: true, // enable antispam
@@ -24,15 +26,35 @@ const antiabus = new AntiAbus(client, {
     onMessage: function(message, abus) { // Custom message in message handler
         if (abus.antispam) {
             const timeout = (this.options.antispamInterval - (Date.now() - abus.antispam.lastTimestamp)) / 1000;
-            message.channel.send(`[ANTISPAM] ${message.author.toString()} You must wait ${timeout} seconde(s). [${abus.antispam.count} messages]`);
-            message.delete();
+            if (abus.antispam.count < 5) message.channel.send(`[ANTISPAM] ${message.author.toString()} You must wait ${timeout} seconde(s). [${abus.antispam.count} messages]`);
+            else message.channel.send('ಠ_ಠ');
+            message.delete();;
+
             return null;
         };
         message.customMessage = true;
 
         return message;
     },
-    exceptionMembers: [ // Ignore members
+    exception: function (type, ...args) {
+        const messageFilter = (message)  => {
+            if (message.author.id == '363603951163015168') {
+                if (wait == 0) message.channel.send('Exception triggered, Only antispam disabled for you !');
+                wait++;
+                if (wait > 4) wait = 0;
+                return {
+                    antispam: true,
+                };
+            } else return false;
+        };
+        const avatarFilter = (user) => {
+            return user.id == '363603951163015168';
+        };
+
+        if (type == 'messageCreate') return messageFilter(...args);
+        else if (type == 'user') return avatarFilter(...args);
+    },
+    /*exceptionMembers: [ // Ignore members
         //'363603951163015168',// Ignore this user
         ['499932143611412493', { // Custom features
             antispam: false,
@@ -49,7 +71,7 @@ const antiabus = new AntiAbus(client, {
         ['794646978968944680', { // Custom features
             antispam: false,
         }],
-    ],
+    ],*/
 });
 
 client.on('ready', () => {
@@ -66,6 +88,11 @@ client.on('message', (...args) => antiabus.messageHandler(...args, (message, exe
     console.log('Custom message ? %s', message.customMessage); // return true
 
     if (message.content == 'Hello') message.channel.send('World !');
+
+    if (message.content == 'stupid') {
+        antiabus.options.exception = null;
+        message.channel.send('Anti-abus exception is now disabled !');
+    };
 }));
 
 client.login(

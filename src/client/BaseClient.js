@@ -20,6 +20,7 @@ class BaseClient extends EventEmitter {
             antispamResetCount: false,
             enableDM: true,
             onMessage: (message) => message,
+            exeption: null,
             exceptionMembers: null,
             exceptionGuilds: null,
             exceptionChannels: null,
